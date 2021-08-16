@@ -1,0 +1,80 @@
+#cloud-config
+
+# Disable password authentication with the SSH daemon
+ssh_pwauth: false
+
+system_info:
+  default_user:
+    name: iot
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    home: /home/iot
+    shell: /bin/bash
+    lock_passwd: True
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAdaHILstx0sODyqPFY2UwL//NEIQ7A1ju3hLmfd2BzC krishna.sjsu@Kjha-MacBook-Pro.local
+
+package_upgrade: true
+
+apt:
+  sources:
+    python3-7-source:
+      source: "ppa:deadsnakes/ppa"
+
+packages:
+  - mosh                             # Mobile Shell tool
+  - cmake                            # Build tool
+  - m4                               # Build tool
+  - pkg-config                       # Build tool
+  - libgstreamer-plugins-bad1.0-dev  # Video streaming tool
+  - gstreamer1.0-plugins-good        # Video streaming tool
+  - gstreamer1.0-plugins-ugly        # Video streaming tool
+  - gstreamer1.0-tools               # Video streaming tool
+  - openjdk-8-jdk                    # AWS Lambda runtime
+  - python2                          # AWS Lambda runtime
+  - python2-dev                      # AWS Lambda runtime
+  - python3.7                        # AWS Lambda runtime
+  - python3.7-dev                    # AWS Lambda runtime
+  - python3-dev                      # AWS Lambda runtime
+  - python3-pip                      # AWS Lambda runtime
+  - libssl-dev                       # OpenCV build dependency
+  - libffi-dev                       # OpenCV build dependency
+  - liblog4cplus-dev                 # AWS Kinesis Video Streams SDK dependency
+  - libcurl4-openssl-dev             # AWS Kinesis Video Streams SDK dependency
+
+runcmd:
+  # Build AWS Kinesis Video Streams SDK
+  - git clone https://github.com/awslabs/amazon-kinesis-video-streams-producer-sdk-cpp.git /tmp/amazon-kinesis-video-streams-producer-sdk
+  - mkdir /usr/local/amazon-kinesis
+  - cd /usr/local/amazon-kinesis && cmake /tmp/amazon-kinesis-video-streams-producer-sdk -DBUILD_GSTREAMER_PLUGIN=ON -DBUILD_DEPENDENCIES=OFF && make -j4
+  
+  # Set up GGC user and group
+  - sudo adduser --system ggc_user
+  - sudo addgroup --system ggc_group
+  
+  # Install node.JS
+  - curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+  - apt-get install -y nodejs
+  
+  # Install AWS IoT Greengrass Core
+  - wget -O /tmp/aws-iot-greengrass-keyring.deb https://d1onfpft10uf5o.cloudfront.net/greengrass-apt/downloads/aws-iot-greengrass-keyring.deb
+  - dpkg -i /tmp/aws-iot-greengrass-keyring.deb
+  - echo "deb https://dnw9lb6lzp2d8.cloudfront.net stable main" | sudo tee /etc/apt/sources.list.d/greengrass.list
+  - apt-get update
+  - apt-get install -y aws-iot-greengrass-core
+  - wget -O /greengrass/certs/root.ca.pem https://www.amazontrust.com/repository/AmazonRootCA1.pem
+  
+  # Install Python libraries
+  - python3.7 -m pip install --no-cache-dir -U pip
+  - python3.8 -m pip install --no-cache-dir -U pip
+  - python3.7 -m pip install --no-cache-dir -U scikit-build
+  - python3.8 -m pip install --no-cache-dir -U scikit-build
+  - MAKEFLAGS="-j 4" python3.7 -m pip install --no-cache-dir opencv-python
+  - MAKEFLAGS="-j 4" python3.8 -m pip install --no-cache-dir opencv-python
+  
+  # Create symlinks to AWS Lambda runtimes
+  - ln -s /usr/bin/node /usr/bin/nodejs
+  - ln -s /usr/bin/node /usr/bin/nodejs12.x
+  - ln -s /usr/bin/java /usr/bin/java8
+  
+  # Enable the AWS IoT Greengrass Core service
+  - systemctl enable greengrass.service
