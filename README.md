@@ -1,6 +1,6 @@
 # IoTEdge - Traval flare
 
-# IoTEdge Installation
+## IoTEdge Installation
 1. update rasp to latest version
 
 ```
@@ -64,12 +64,15 @@ unzip coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip -d Sample_TFLite_model
 
 5. Run the TensorFlow Lite model
 
-python3 TFLite_detection_webcam.py --modeldir=Sample_TFLite_model
+python3 TFLite_detection_webcam.py --modeldir=TFLite_model
+
 ```
 
-After a few moments of initializing, a window will appear showing the webcam feed. Detected objects will have bounding boxes and labels displayed on them in real time.
+After a few moments of initializing, a window will appear showing the webcam feed. Detected objects will have bounding boxes and labels displayed on them in real time and tf flare util python process daemon start storing json file for accient data in json format for lamda to consume.
+ ````
 
-<p align="center">
-   <img height="700" src="iot-doc/iot-arch.jpg">
-   <img height="700" src="iot-doc/pi.jpg">
-</p>
+![Screenshot](iot-doc/iot-arch.jpg)
+
+![plot](/iot-doc/pi.jpg)
+
+
