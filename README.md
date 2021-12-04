@@ -80,4 +80,6 @@ After a few moments of initializing, a window will appear showing the webcam fee
   <img height="400" src="iot-doc/car-dash.jpg" >
 </p>
 
+## IoT Cloud Installation
+   https://docs.aws.amazon.com/greengrass/v1/developerguide/gg-gs.html
 
