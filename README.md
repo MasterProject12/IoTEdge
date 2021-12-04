@@ -70,9 +70,14 @@ python3 TFLite_detection_webcam.py --modeldir=TFLite_model
 
 After a few moments of initializing, a window will appear showing the webcam feed. Detected objects will have bounding boxes and labels displayed on them in real time and tf flare util python process daemon start storing json file for accient data in json format for lamda to consume.
  ````
-
-![Screenshot](iot-doc/iot-arch.jpg)
-
-![plot](/iot-doc/pi.jpg)
+<p align="center">
+   <img height="300" src="iot-doc/iot-arch.jpg">
+</p>
+<p align="center">
+     <img height="480" src="iot-doc/pi.jpg">
+</p>
+<p align="center">
+  <img height="400" src="iot-doc/car-dash.jpg" >
+</p>
 
 
